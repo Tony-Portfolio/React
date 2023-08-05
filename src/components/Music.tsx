@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import MusicData from "../assets/data.json";
-import YouTube from "react-youtube";
+import { YouTube } from "react-youtube";
 import placeholder from "../assets/placeholder.png";
 
 function Music() {
@@ -153,7 +153,6 @@ function Music() {
                             playNextVideo()
                         }
                     />
-                    {/* <p>Current Time: {currentTime}</p> */}
                     <div className={`grow bg-[rgba(255,255,255,0.1)] p-2 rounded flex md:flex-row flex-col gap-4 sticky top-0 left-0 ${selectVideo ? 'flex' : 'hidden'}`}>
                         <div className="shrink-0 flex md:justify-start justify-center">
                             <img src={videoPlaying ? videoPlaying.snippet.thumbnails.high.url : placeholder} alt={videoPlaying ? videoPlaying.snippet.title : 'Loading...'} className="h-[200px]" />
