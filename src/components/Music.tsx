@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import MusicData from "../assets/data.json";
-import YouTube, { YouTubePlayer } from 'react-youtube';
+import YouTube, { YouTubeProps } from 'react-youtube';
 import placeholder from "../assets/placeholder.png";
 
 function Music() {
@@ -29,7 +29,7 @@ function Music() {
         };
     }, []);
 
-    const onPlayerReady = (event: any) => {
+    const onPlayerReady: YouTubeProps['onReady'] = (event: any) => {
         setPlayer(event.target);
         if (videoVolume == 0) {
             event.target.setVolume(50);
@@ -38,7 +38,7 @@ function Music() {
         setVideoDuration(event.target.getDuration());
     };
 
-    const onPlayerStateChange = (event: any) => {
+    const onPlayerStateChange: YouTubeProps['onStateChange'] = (event: any) => {
         if (event.data === YouTube.PlayerState.PLAYING) {
             const interval = setInterval(() => {
                 setCurrentTime(secondsToHms(player.getCurrentTime()));
@@ -127,7 +127,7 @@ function Music() {
         }, 2000);
     }, [])
 
-    const opts = {
+    const opts: YouTubeProps['opts'] = {
         width: "560",
         height: "315",
         playerVars: {
@@ -146,15 +146,13 @@ function Music() {
                     </div>
                 )}
                 <div className="bg-black rounded w-full p-4 text-white flex gap-4">
-                    {videoPlaying && (
-                        <YouTube
-                            videoId={videoPlaying.snippet.resourceId.videoId}
-                            opts={opts}
-                            onReady={onPlayerReady}
-                            onStateChange={onPlayerStateChange}
-                            onEnd={playNextVideo}
-                        />
-                    )}
+                    <YouTube
+                        videoId={videoPlaying.snippet.resourceId.videoId}
+                        opts={opts}
+                        onReady={onPlayerReady}
+                        onStateChange={onPlayerStateChange}
+                        onEnd={playNextVideo}
+                    />
                     <div className={`grow bg-[rgba(255,255,255,0.1)] p-2 rounded flex md:flex-row flex-col gap-4 sticky top-0 left-0 ${selectVideo ? 'flex' : 'hidden'}`}>
                         <div className="shrink-0 flex md:justify-start justify-center">
                             <img src={videoPlaying ? videoPlaying.snippet.thumbnails.high.url : placeholder} alt={videoPlaying ? videoPlaying.snippet.title : 'Loading...'} className="h-[200px]" />
