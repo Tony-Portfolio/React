@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import MusicData from "../assets/data.json";
 import YouTube from "react-youtube";
 import placeholder from "../assets/placeholder.png";
@@ -58,7 +58,7 @@ function Music() {
         var hDisplay = h > 0 ? h + ":" : "";
         var mDisplay = m >= 0 ? (m < 10 ? "0" + m + ":" : m + ":") : "0:";
         var sDisplay = s >= 0 ? (s < 10 ? "0" + s : +s) : "";
-        return hDisplay + mDisplay + sDisplay; ``
+        return hDisplay + mDisplay + sDisplay;
     }
     const handlePause = () => {
         let isBtnPaused = !isPaused;
