@@ -68,7 +68,7 @@ function Music() {
         const fetchData = async () => {
             try {
                 const baseUrl = import.meta.env.BASE_URL;
-                const response = await fetch(`${baseUrl}/data.json`);
+                const response = await fetch(`${baseUrl}data.json`);
                 const data = await response.json();
                 console.log(data.items);
                 setLoading(false);
