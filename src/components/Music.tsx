@@ -1,5 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import YouTube from "react-youtube";
+
+interface Video {
+    kind: string,
+    etag: string,
+    id: string,
+    snippet: {
+        publishedAt: string;
+        channelId: string;
+        title: string;
+        description: string;
+        thumbnails: {
+            default: {
+                url: string;
+                width: number;
+                height: number;
+            };
+            medium: {
+                url: string;
+                width: number;
+                height: number;
+            };
+            high: {
+                url: string;
+                width: number;
+                height: number;
+            };
+            standard: {
+                url: string;
+                width: number;
+                height: number;
+            };
+            maxres: {
+                url: string;
+                width: number;
+                height: number;
+            };
+        };
+        channelTitle: string;
+        playlistId: string;
+        position: number;
+        resourceId: {
+            kind: string;
+            videoId: string;
+        };
+        videoOwnerChannelTitle: string;
+        videoOwnerChannelId: string;
+    }
+}
 
 function Music() {
     const [currentTime, setCurrentTime] = React.useState('00:00');
@@ -9,7 +57,7 @@ function Music() {
     const [isPaused, setIsPaused] = React.useState(false);
     const [videoDuration, setVideoDuration] = React.useState(0);
     const [videoVolume, setVideoVolume] = React.useState(0);
-    const [results, setResults] = React.useState([]);
+    const [results, setResults] = React.useState<Video[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [videoPlaying, setVideoPlaying] = React.useState<any>('');
     const [videoMode, setVideoMode] = React.useState('');
