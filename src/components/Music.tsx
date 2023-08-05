@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import MusicData from "../assets/data.json";
-import { YouTube } from "react-youtube";
+import YouTube, { YouTubePlayer } from 'react-youtube';
 import placeholder from "../assets/placeholder.png";
 
 function Music() {
@@ -31,7 +31,7 @@ function Music() {
 
     const onPlayerReady = (event: any) => {
         setPlayer(event.target);
-        if(videoVolume == 0){
+        if (videoVolume == 0) {
             event.target.setVolume(50);
             setVideoVolume(50);
         }
@@ -127,32 +127,34 @@ function Music() {
         }, 2000);
     }, [])
 
+    const opts = {
+        width: "560",
+        height: "315",
+        playerVars: {
+            autoplay: 1,
+        },
+    };
+
     return (
         loading == false ? (
             <>
                 {scrollTopBtn && (
                     <div className="bg-[rgba(255,255,255,0.2)] p-2 rounded text-2xl font-bold fixed bottom-4 right-4 cursor-pointer" onClick={() => {
-                        window.scrollTo({top: 0})
+                        window.scrollTo({ top: 0 })
                     }}>
                         <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><path fill="white" d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z" /></svg>
                     </div>
                 )}
                 <div className="bg-black rounded w-full p-4 text-white flex gap-4">
-                    <YouTube className="hidden"
-                        videoId={videoPlaying ? videoPlaying.snippet.resourceId.videoId : results[0].snippet.resourceId.videoId}
-                        opts={{
-                            width: "560",
-                            height: "315",
-                            playerVars: {
-                                autoplay: 1,
-                            },
-                        }}
-                        onReady={onPlayerReady}
-                        onStateChange={onPlayerStateChange}
-                        onEnd={() =>
-                            playNextVideo()
-                        }
-                    />
+                    {videoPlaying && (
+                        <YouTube
+                            videoId={videoPlaying.snippet.resourceId.videoId}
+                            opts={opts}
+                            onReady={onPlayerReady}
+                            onStateChange={onPlayerStateChange}
+                            onEnd={playNextVideo}
+                        />
+                    )}
                     <div className={`grow bg-[rgba(255,255,255,0.1)] p-2 rounded flex md:flex-row flex-col gap-4 sticky top-0 left-0 ${selectVideo ? 'flex' : 'hidden'}`}>
                         <div className="shrink-0 flex md:justify-start justify-center">
                             <img src={videoPlaying ? videoPlaying.snippet.thumbnails.high.url : placeholder} alt={videoPlaying ? videoPlaying.snippet.title : 'Loading...'} className="h-[200px]" />
@@ -168,7 +170,7 @@ function Music() {
                                     <div className="rotate-180 text-3xl hover:bg-[rgba(255,255,255,0.3)] w-10 h-10 flex items-center justify-center rounded cursor-pointer" onClick={() => previousVideo()}>
                                         <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512"><path fill="white" d="M52.5 440.6c-9.5 7.9-22.8 9.7-34.1 4.4S0 428.4 0 416V96C0 83.6 7.2 72.3 18.4 67s24.5-3.6 34.1 4.4l192 160L256 241V96c0-17.7 14.3-32 32-32s32 14.3 32 32V416c0 17.7-14.3 32-32 32s-32-14.3-32-32V271l-11.5 9.6-192 160z" /></svg>
                                     </div>
-                                    <div className="w-10 h-10 rounded flex items-center justify-center shrink-0 text-3xl cursor-pointer hover:bg-[rgba(255,255,255,0.3)]" onClick={() => handlePause()} id = "start-btn">
+                                    <div className="w-10 h-10 rounded flex items-center justify-center shrink-0 text-3xl cursor-pointer hover:bg-[rgba(255,255,255,0.3)]" onClick={() => handlePause()} id="start-btn">
                                         {isPaused ? (
                                             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512"><path fill="white" d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z" /></svg>
                                         ) : (
