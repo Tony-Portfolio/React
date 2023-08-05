@@ -1,7 +1,5 @@
-import React, { useEffect } from "react";
-import MusicData from "../assets/data.json";
-import YouTube, { YouTubeProps } from 'react-youtube';
-import placeholder from "../assets/placeholder.png";
+import React, { useState, useEffect } from "react";
+import YouTube from "react-youtube";
 
 function Music() {
     const [currentTime, setCurrentTime] = React.useState('00:00');
@@ -11,12 +9,28 @@ function Music() {
     const [isPaused, setIsPaused] = React.useState(false);
     const [videoDuration, setVideoDuration] = React.useState(0);
     const [videoVolume, setVideoVolume] = React.useState(0);
-    const [results, setResults] = React.useState(MusicData.items);
+    const [results, setResults] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [videoPlaying, setVideoPlaying] = React.useState<any>('');
     const [videoMode, setVideoMode] = React.useState('');
     const [scrollTopBtn, setscrollTopBtn] = React.useState(false);
     const [selectVideo, setSelectVideo] = React.useState(false);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/data.json');
+                const data = await response.json();
+                console.log(data.items);
+                setLoading(false);
+                setResults(data.items);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -29,16 +43,17 @@ function Music() {
         };
     }, []);
 
-    const onPlayerReady: YouTubeProps['onReady'] = (event: any) => {
+    const onPlayerReady = (event: any) => {
         setPlayer(event.target);
         if (videoVolume == 0) {
             event.target.setVolume(50);
             setVideoVolume(50);
         }
         setVideoDuration(event.target.getDuration());
+        event.target.pauseVideo();
     };
 
-    const onPlayerStateChange: YouTubeProps['onStateChange'] = (event: any) => {
+    const onPlayerStateChange = (event: any) => {
         if (event.data === YouTube.PlayerState.PLAYING) {
             const interval = setInterval(() => {
                 setCurrentTime(secondsToHms(player.getCurrentTime()));
@@ -58,7 +73,7 @@ function Music() {
         var hDisplay = h > 0 ? h + ":" : "";
         var mDisplay = m >= 0 ? (m < 10 ? "0" + m + ":" : m + ":") : "0:";
         var sDisplay = s >= 0 ? (s < 10 ? "0" + s : +s) : "";
-        return hDisplay + mDisplay + sDisplay;
+        return hDisplay + mDisplay + sDisplay; ``
     }
     const handlePause = () => {
         let isBtnPaused = !isPaused;
@@ -120,21 +135,6 @@ function Music() {
         videoInit();
     }
 
-    useEffect(() => {
-        setTimeout(() => {
-            setResults(MusicData.items);
-            setLoading(false);
-        }, 2000);
-    }, [])
-
-    const opts: YouTubeProps['opts'] = {
-        width: "560",
-        height: "315",
-        playerVars: {
-            autoplay: 1,
-        },
-    };
-
     return (
         loading == false ? (
             <>
@@ -146,16 +146,25 @@ function Music() {
                     </div>
                 )}
                 <div className="bg-black rounded w-full p-4 text-white flex gap-4">
-                    <YouTube
-                        videoId={videoPlaying.snippet.resourceId.videoId}
-                        opts={opts}
+                    <YouTube className="hidden"
+                        videoId={videoPlaying ? videoPlaying.snippet.resourceId.videoId : results[0].snippet.resourceId.videoId}
+                        opts={{
+                            width: "560",
+                            height: "315",
+                            playerVars: {
+                                autoplay: 1,
+                            },
+                        }}
                         onReady={onPlayerReady}
                         onStateChange={onPlayerStateChange}
-                        onEnd={playNextVideo}
+                        onEnd={() =>
+                            playNextVideo()
+                        }
                     />
+                    {/* <p>Current Time: {currentTime}</p> */}
                     <div className={`grow bg-[rgba(255,255,255,0.1)] p-2 rounded flex md:flex-row flex-col gap-4 sticky top-0 left-0 ${selectVideo ? 'flex' : 'hidden'}`}>
                         <div className="shrink-0 flex md:justify-start justify-center">
-                            <img src={videoPlaying ? videoPlaying.snippet.thumbnails.high.url : placeholder} alt={videoPlaying ? videoPlaying.snippet.title : 'Loading...'} className="h-[200px]" />
+                            <img src={videoPlaying ? videoPlaying.snippet.thumbnails.high.url : '/placeholder.png'} alt={videoPlaying ? videoPlaying.snippet.title : 'Loading...'} className="h-[200px]" />
                         </div>
                         <div className="md:text-left text-center">
                             <h3 className="font-bold text-2xl text-slate-300">{videoPlaying ? videoPlaying.snippet.title : 'Loading...'}</h3>
