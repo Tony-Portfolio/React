@@ -99,7 +99,6 @@ function Music() {
             setVideoVolume(50);
         }
         setVideoDuration(event.target.getDuration());
-        event.target.pauseVideo();
     };
 
     const onPlayerStateChange = (event: any) => {
@@ -125,11 +124,12 @@ function Music() {
         return hDisplay + mDisplay + sDisplay; ``
     }
     const handlePause = () => {
-        let isBtnPaused = !isPaused;
-        isPaused ? player.pauseVideo() : player.playVideo();
-        setIsPaused(isBtnPaused);
-    }
-
+        setIsPaused((prevIsPaused) => {
+            const isBtnPaused = !prevIsPaused;
+            isBtnPaused ? player.playVideo() : player.pauseVideo();
+            return isBtnPaused;
+        });
+    };
 
     useEffect(() => {
         return () => clearInterval(intervalId);
@@ -201,7 +201,7 @@ function Music() {
                             width: "560",
                             height: "315",
                             playerVars: {
-                                autoplay: 1,
+                                // autoplay: 1,
                             },
                         }}
                         onReady={onPlayerReady}
